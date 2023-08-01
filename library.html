@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <style>
+       .navbar {
+      margin-bottom: 50px;
+      border-radius: 0;
+       }
+    </style>
+</head>
+<body>
+  <div class="jumbotron">
+    <div class="container text-center">
+      <h2>Online Library</h2>      
+    </div>
+  </div>
+
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>                        
+        </button>
+        <a class="navbar-brand" href="#">Library</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li ><a onclick="booksTable()">Books</a></li>
+          <li ><a onclick="customersTable()">Customers</a></li>
+          <li ><a >Loans</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#"><span class="glyphicon glyphicon-user"></span> Login</a></li>
+          <li><a onclick="createUserSignInForm()"><span class="glyphicon glyphicon-user"></span> Sign in</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div id="products-container" class="container"></div><br>
+  
+<script>
+  // create the table columns
+  function buildTable(columnsTitles){
+    var page = `<table class="table">
+                    <thead class="thead-dark">
+                      <tr>`  
+    columnsTitles.forEach((title) => {
+        page += `<th scope="col">${title}</th>`
+      })
+      page += `  </tr>
+                    </thead>
+                    <tbody>`
+    return page
+  }
+  
+  // Gets all books
+  async function getAllBooks() {
+    try {
+      var response = await axios.get("http://127.0.0.1:8000/library/books");
+      console.log(response.data);
+      var booksData = JSON.parse(response.data);
+      return booksData
+    } catch (error) {
+      console.error("Error fetching books:", error);
+      return []; // Return an empty array or handle the error accordingly.
+    }
+  }
+
+
+  // create the books table 
+  function booksTable() {
+    getAllBooks().then((booksData) => {
+    var page = buildTable(["#", "Name", "Author", "Year Published", "Book Type", "Status", ""])
+    var rawNum = 1;
+    booksData.forEach((book) => {
+      page += `
+        <tr>
+          <th scope="row">${rawNum}</th>
+          <td>${book.name}</td>
+          <td>${book.author}</td>
+          <td>${book.year_published}</td>
+          <td>${book.book_type}</td>
+          <td>${book.status}</td>
+          <td><button id="loanBtn_${book.id}" type="button"  onclick="" class="btn btn-danger">Loan</button></td>
+        </tr>
+      `;
+      rawNum++;
+    });
+    page += `</tbody></table>`;
+    document.getElementById("products-container").innerHTML = page;
+    });
+  }
+
+
+  // create the customers table
+  function customersTable(){
+    axios.get("http://127.0.0.1:8000/library/customers")
+      .then((res) => {
+        console.log(res.data);
+        var customersData = JSON.parse(res.data);
+        var rawNum = 1
+        var page = buildTable(["#", "Name", "City", "Age", "Email", ""]);
+        customersData.forEach((customer) => {
+          page += `
+                  <tr>
+                    <th scope="row">${rawNum}</th>
+                    <td>${customer.name}</td>
+                    <td>${customer.city}</td>
+                    <td>${customer.age}</td>
+                    <td>${customer.email}</td>
+                    <td><button id="loansBtn_${customer.id}" type="button"  onclick="" class="btn btn-danger">View Loans</button></td>
+                  </tr>
+            `;
+            rawNum ++ ;
+        });
+        page += `  </tbody>
+                </table>`
+        document.getElementById("products-container").innerHTML = page;
+  })}
+  
+
+  // Create a user sign in form
+  function createUserSignInForm(){
+    var page = `
+          <div class="form-container">
+            <h1 class="text-center">Sign in</h1>
+            <form id="signinForm" onsubmit="createCustomer(event)">
+              <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" required class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" required class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" required class="form-control">
+              </div>
+              <div class="form-group text-right">
+                <input type="submit" value="Create Customer" class="btn btn-primary">
+              </div>
+            </form>
+          </div>`;
+
+    document.getElementById("products-container").innerHTML = page;
+  }
+
+  // Create a customer posting the sign in form
+  function createCustomer(event) {
+    event.preventDefault();
+    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const city = document.getElementById("city").value;
+    const age = document.getElementById("age").value;
+    const password = document.getElementById("password").value;
+
+    const customerData = {
+      username: username,
+      email: email,
+      city: city,
+      age: parseInt(age), // Convert age to integer
+      password: password
+    };
+
+    // Send the customer data as JSON using a POST request with Axios
+    axios.post("http://127.0.0.1:8000/library/create_customer", customerData)
+      .then(response => {
+        // Handle the response data if needed
+        console.log(response.data);
+      })
+      .catch(error => {
+        // Handle any errors that occurred during the POST request
+        console.error("Error:", error);
+      });
+      customersTable()
+  }
+  
+
+  booksTable()
+  
+  </script>
+    
+</body>
+</html>
