@@ -194,7 +194,49 @@
       });
       customersTable()
   }
+
+  //create login form 
+  function createLoginForm(){
+    var page = `<form id="loginForm" onsubmit="loginUser(event)">
+                  <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" required class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required class="form-control">
+                  </div>
+                  <div class="form-group text-right">
+                    <input type="submit" value="Login" class="btn btn-primary">
+                  </div>
+                </form>`;
+    document.getElementById("products-container").innerHTML = page;
+  }
   
+  // login the user
+  function loginUser(event) {
+    event.preventDefault();
+
+    // Get the form elements directly
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    const loginData = {
+      username: username,
+      password: password
+    };
+
+    // Send the login data as JSON using a POST request with Axios
+    axios.post("http://127.0.0.1:8000/library/login/", loginData)
+      .then(response => {
+        // Handle the response data if needed
+        console.log(response.data);
+      })
+      .catch(error => {
+        // Handle any errors that occurred during the POST request
+        console.error("Error:", error);
+      });
+    }
 
   booksTable()
   
