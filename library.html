@@ -91,10 +91,11 @@
           <td>${book.author}</td>
           <td>${book.year_published}</td>
           <td>${book.book_type}</td>
-          <td>${book.status}</td>
-          <td><button id="loanBtn_${book.id}" type="button"  onclick="" class="btn btn-danger">Loan</button></td>
-        </tr>
-      `;
+          <td>${book.status}</td>`;
+      if (book.status == "Available") {
+        page += `<td><button id="loanBtn_${book.id}" type="button"  onclick="" class="btn btn-danger">Loan</button></td>`
+      };
+      page += `</tr>`;
       rawNum++;
     });
     page += `</tbody></table>`;
@@ -104,11 +105,21 @@
 
 
   // create the customers table
+  async function getAllCustomers() {
+    try {
+      var response = await axios.get("http://127.0.0.1:8000/library/customers");
+      console.log(response.data);
+      var customersData = JSON.parse(response.data);
+      return customersData
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+      return []; // Return an empty array or handle the error accordingly.
+    }
+  }
+
+
   function customersTable(){
-    axios.get("http://127.0.0.1:8000/library/customers")
-      .then((res) => {
-        console.log(res.data);
-        var customersData = JSON.parse(res.data);
+    getAllCustomers().then((customerData) => {
         var rawNum = 1
         var page = buildTable(["#", "Name", "City", "Age", "Email", ""]);
         customersData.forEach((customer) => {
