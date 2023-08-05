@@ -40,13 +40,13 @@
           <li ><a >Loans</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="#"><span class="glyphicon glyphicon-user"></span> Login</a></li>
+          <li><a onclick="createLoginForm()"><span class="glyphicon glyphicon-user"></span> Login</a></li>
           <li><a onclick="createUserSignInForm()"><span class="glyphicon glyphicon-user"></span> Sign in</a></li>
         </ul>
       </div>
     </div>
   </nav>
-
+  <div id=""></div>
   <div id="products-container" class="container"></div><br>
   
 <script>
@@ -214,10 +214,9 @@
   }
   
   // login the user
-  function loginUser(event) {
+  async function loginUser(event) {
     event.preventDefault();
 
-    // Get the form elements directly
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
@@ -226,19 +225,40 @@
       password: password
     };
 
-    // Send the login data as JSON using a POST request with Axios
-    axios.post("http://127.0.0.1:8000/library/login/", loginData)
-      .then(response => {
-        // Handle the response data if needed
+    const csrftoken = await getCSRFToken();
+
+    if (csrftoken) {
+      // Include the CSRF token in the headers of the login request
+      try {
+        const response = await axios.post("http://127.0.0.1:8000/library/login", loginData, {
+          headers: {
+            'X-CSRFToken': csrftoken
+          }
+        });
+        // Handle the response data
         console.log(response.data);
-      })
-      .catch(error => {
+      } catch (error) {
         // Handle any errors that occurred during the POST request
         console.error("Error:", error);
-      });
+      }
+    } else {
+      console.error("CSRF token not found. Make sure your Django server is running and accessible.");
     }
+  }
 
-  booksTable()
+
+  //get CSRF token
+  async function getCSRFToken() {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/library/get_csrf_token");
+      return response.data.csrfToken;
+    } catch (error) {
+      console.error("Error fetching CSRF token:", error);
+      return null;
+    }
+  }
+
+  booksTable();
   
   </script>
     
