@@ -40,7 +40,7 @@
           <li ><a >Loans</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li><a onclick=""><span class="glyphicon glyphicon-user"></span> Logout</a></li>
+          <li><a onclick="logoutUser()"><span class="glyphicon glyphicon-user"></span> Logout</a></li>
         </ul>
       </div>
     </div>
@@ -50,6 +50,9 @@
   
 <script>
   let user
+  if (localStorage.getItem('user')){
+    user = JSON.parse(localStorage.getItem('user'));
+  }
   // create the table columns
   function buildTable(columnsTitles){
     var page = `<table class="table">
@@ -80,6 +83,7 @@
 
   // create the books table 
   function booksTable(user_id) {
+    if (checkUserStatus(user)){
     getAllBooks().then((booksData) => {
     var page = buildTable(["#", "Name", "Author", "Year Published", "Book Type", "Status", ""])
     var rawNum = 1;
@@ -101,7 +105,7 @@
     page += `</tbody></table>`;
     document.getElementById("products-container").innerHTML = page;
     });
-  }
+  }}
 
 
   // create the customers table
@@ -119,6 +123,7 @@
 
 
   function customersTable(){
+    if (checkUserStatus(user)){
     getAllCustomers().then((customersData) => {
         var rawNum = 1
         var page = buildTable(["#", "Name", "City", "Age", "Email", ""]);
@@ -138,7 +143,7 @@
         page += `  </tbody>
                 </table>`
         document.getElementById("products-container").innerHTML = page;
-  })}
+  })}}
   
 
   // Create a user sign in form
@@ -250,6 +255,7 @@
         // Handle the response data
         console.log(response.data);
         user = response.data
+        localStorage.setItem('user',JSON.stringify(user))
         checkUserStatus(user)
         booksTable(user.userId)
       } catch (error) {
@@ -290,28 +296,56 @@
 
 
   // Function to check if the user is logged in
-   function checkUserStatus(user) {
+   function checkUserStatus() {
     try {
       const userStatusLine = document.getElementById("userStatusLine");
 
-      if (user) {
+      if (localStorage.getItem('user')) {
+        user = JSON.parse(localStorage.getItem('user'));
         // If the user is authenticated, show "Hello 'user.username'"
         userStatusLine.innerText = `Hello ${user.username}`;
+        return true
       } else {
         // If the user is not authenticated, show "Please login"
         userStatusLine.innerText = "Please login";
+        createLoginForm();
+        return false
       }
     } catch (error) {
       console.error("Error checking user status:", error);
     }
   }
 
+
+  // Loan a book
   function loanBook(book_id,user_id){
     console.log(`loan book ${book_id} to customer ${user_id}`)
   }
 
+
+  //Logout 
+  async function logoutUser() {
+    const csrftoken = await getCSRFToken();
+
+    if (csrftoken) {
+      // Include the CSRF token in the headers of the login request
+        const response = await axios.post("http://127.0.0.1:8000/library/logout",{
+          headers: {
+            'X-CSRFToken': csrftoken
+          }
+        }).then(response => {
+        // Handle the response data if needed
+        console.log(response.data);
+        localStorage.clear()
+      })
+      .catch(error => {
+        // Handle any errors that occurred during the POST request
+        console.error("Error:", error);
+      });
+  }}
+
   
-  createLoginForm();
+  checkUserStatus(user);
   
   </script>
     
