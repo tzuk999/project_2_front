@@ -336,7 +336,8 @@
         }).then(response => {
         // Handle the response data if needed
         console.log(response.data);
-        localStorage.clear()
+        localStorage.clear();
+        createLoginForm();
       })
       .catch(error => {
         // Handle any errors that occurred during the POST request
