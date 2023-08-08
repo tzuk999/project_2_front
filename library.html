@@ -10,6 +10,19 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <style>
+      .search-container {
+        text-align: left;
+        margin-left: 20px;
+      }
+
+      #searchInput {
+        padding: 5px;
+        width: 300px;
+      }
+
+      #searchButton {
+        padding: 5px 10px;
+      }
        .navbar {
       margin-bottom: 50px;
       border-radius: 0;
@@ -35,7 +48,7 @@
       </div>
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-          <li ><a onclick="booksTable(user.userId)">Books</a></li>
+          <li ><a onclick="booksPage()">Books</a></li>
           <li ><a onclick="customersTable()">Customers</a></li>
           <li ><a >Loans</a></li>
         </ul>
@@ -46,6 +59,7 @@
     </div>
   </nav>
   
+  <div id="search-container" class="search-container"></div>
   <div id="products-container" class="container"></div><br>
   
 <script>
@@ -84,7 +98,7 @@
   // create the books table 
   function booksTable(user_id) {
     if (checkUserStatus(user)){
-    getAllBooks().then((booksData) => {
+      getAllBooks().then((booksData) => {
     var page = buildTable(["#", "Name", "Author", "Year Published", "Book Type", "Status", ""])
     var rawNum = 1;
     booksData.forEach((book) => {
@@ -257,7 +271,7 @@
         user = response.data
         localStorage.setItem('user',JSON.stringify(user))
         checkUserStatus(user)
-        booksTable(user.userId)
+        booksPage()
       } catch (error) {
         // Handle any errors that occurred during the POST request
         console.error("Error:", error);
@@ -337,7 +351,7 @@
         // Handle the response data if needed
         console.log(response.data);
         localStorage.clear();
-        createLoginForm();
+        checkUserStatus();
       })
       .catch(error => {
         // Handle any errors that occurred during the POST request
@@ -345,7 +359,76 @@
       });
   }}
 
+
+  function createBooksSearchBar(){
+    var page = `<div><form id="searchForm" onsubmit="searchBook(event)">
+                  <div class="form-group">
+                    <input type="text" id="searchInput" placeholder="Search by book name">
+                    <input type="submit"id="searchButton" value=Search>
+                  </div>
+                </form></div>`
+  document.getElementById("search-container").innerHTML = page         
+  }
+
+
+  async function getBooksBySearch(searchInput) {
+    try {
+      var response = await axios.get(`http://127.0.0.1:8000/library/books/${searchInput}`);
+      console.log(response.data);
+      var booksData = JSON.parse(response.data);
+      return booksData
+    } catch (error) {
+      console.error("Error fetching books:", error);
+      return []; // Return an empty array or handle the error accordingly.
+    }
+  }
+
+
+
+  async function searchBook(event){
+    event.preventDefault();
+    const searchInput = document.getElementById("searchInput").value
+    try {
+      getBooksBySearch(searchInput).then((booksData) => {
+    var page = createBooksSearchBar()
+    page += buildTable(["#", "Name", "Author", "Year Published", "Book Type", "Status", ""])
+    var rawNum = 1;
+    booksData.forEach((book) => {
+      page += `
+        <tr>
+          <th scope="row">${rawNum}</th>
+          <td>${book.name}</td>
+          <td>${book.author}</td>
+          <td>${book.year_published}</td>
+          <td>${book.book_type}</td>
+          <td>${book.status}</td>`;
+      if (book.status == "Available") {
+        page += `<td><button id="loanBtn_${book.id}" type="button"  onclick="loanBook(${book.id},${user.userId})" class="btn btn-danger">Loan</button></td>`
+      };
+      page += `</tr>`;
+      rawNum++;
+    });
+    page += `</tbody></table>`;
+    document.getElementById("products-container").innerHTML = page;
+    createBooksSearchBar();
+    });
   
+      
+    } catch (error) {
+      console.error("Error fetching books:", error);
+      return []; // Return an empty array or handle the error accordingly.
+    }
+  }
+  
+
+  function booksPage(){
+    if (checkUserStatus(user)){
+    booksTable(user.userId);
+    createBooksSearchBar();
+
+  }}
+
+
   checkUserStatus(user);
   
   </script>
