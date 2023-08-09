@@ -332,8 +332,28 @@
 
 
   // Loan a book
-  function loanBook(book_id,user_id){
-    console.log(`loan book ${book_id} to customer ${user_id}`)
+  async function loanBook(bookId,userId){
+    const book_id = bookId
+    const customer_id = userId
+    const loanData = {
+      book_id : book_id,
+      customer_id : customer_id
+    }
+    const csrftoken = await getCSRFToken();
+    const response = await axios.post("http://127.0.0.1:8000/library/create_loan", loanData, {
+          headers: {
+            'X-CSRFToken': csrftoken
+          }
+        })
+      (response => {
+        // Handle the response data if needed
+        console.log(response.data);
+      })
+      .catch(error => {
+        // Handle any errors that occurred during the POST request
+        console.error("Error:", error);
+      });
+      booksPage()
   }
 
 
