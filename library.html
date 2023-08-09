@@ -49,7 +49,7 @@
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
           <li ><a onclick="booksPage()">Books</a></li>
-          <li ><a onclick="customersTable()">Customers</a></li>
+          <li ><a onclick="customersPage()">Customers</a></li>
           <li ><a >Loans</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
@@ -445,6 +445,73 @@
     if (checkUserStatus(user)){
     booksTable(user.userId);
     createBooksSearchBar();
+
+  }}
+
+
+  function createCustomersSearchBar(){
+    var page = `<div><form id="searchForm" onsubmit="searchCustomer(event)">
+                  <div class="form-group">
+                    <input type="text" id="searchInput" placeholder="Search by book name">
+                    <input type="submit"id="searchButton" value=Search>
+                  </div>
+                </form></div>`
+  document.getElementById("search-container").innerHTML = page         
+  }
+
+
+  async function getCustomersBySearch(searchInput) {
+    try {
+      var response = await axios.get(`http://127.0.0.1:8000/library/customers/${searchInput}`);
+      console.log(response.data);
+      var customersData = JSON.parse(response.data);
+      return customersData
+    } catch (error) {
+      console.error("Error fetching books:", error);
+      return []; // Return an empty array or handle the error accordingly.
+    }
+  }
+
+
+
+  async function searchCustomer(event){
+    event.preventDefault();
+    const searchInput = document.getElementById("searchInput").value
+    try {
+      await getCustomersBySearch(searchInput).then((customersData) => {
+    var page = createCustomersSearchBar()
+    var rawNum = 1;
+    page += buildTable(["#", "Name", "City", "Age", "Email", ""]);
+        customersData.forEach((customer) => {
+          page += `
+                  <tr>
+                    <th scope="row">${rawNum}</th>
+                    <td>${customer.name}</td>
+                    <td>${customer.city}</td>
+                    <td>${customer.age}</td>
+                    <td>${customer.email}</td>
+                    <td><button id="loansBtn_${customer.id}" type="button"  onclick="" class="btn btn-danger">View Loans</button></td>
+                  </tr>
+            `;
+      rawNum++;
+    });
+    page += `</tbody></table>`;
+    document.getElementById("products-container").innerHTML = page;
+    createCustomersSearchBar();
+    });
+  
+      
+    } catch (error) {
+      console.error("Error fetching books:", error);
+      return []; // Return an empty array or handle the error accordingly.
+    }
+  }
+
+
+  function customersPage(){
+    if (checkUserStatus(user)){
+    customersTable();
+    createCustomersSearchBar();
 
   }}
 
