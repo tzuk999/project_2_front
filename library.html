@@ -572,7 +572,7 @@
                     <td>${loan.customer}</td>
                     <td>${loan.loan_date}</td>
                     <td>${loan.return_date}</td>
-                    <td><button id="returnBookBtn_${loan.id}" type="button"  onclick="" class="btn btn-danger">Return Book</button></td>
+                    <td><button id="returnBookBtn_${loan.id}" type="button"  onclick="returnBook(${loan.id})" class="btn btn-danger">Return Book</button></td>
                   </tr>
             `;
             rawNum ++ ;
@@ -597,7 +597,7 @@
                     <td>${loan.customer}</td>
                     <td>${loan.loan_date}</td>
                     <td>${loan.return_date}</td>
-                    <td><button id="returnBookBtn_${loan.id}" type="button"  onclick="" class="btn btn-danger">Return Book</button></td>
+                    <td><button id="returnBookBtn_${loan.id}" type="button"  onclick="returnBook(${loan.id})" class="btn btn-danger">Return Book</button></td>
                   </tr>
             `;
             rawNum ++ ;
@@ -622,7 +622,7 @@
                     <td>${loan.customer}</td>
                     <td>${loan.loan_date}</td>
                     <td>${loan.return_date}</td>
-                    <td><button id="returnBookBtn_${loan.id}" type="button"  onclick="" class="btn btn-danger">Return Book</button></td>
+                    <td><button id="returnBookBtn_${loan.id}" type="button"  onclick="returnBook(${loan.id})" class="btn btn-danger">Return Book</button></td>
                   </tr>
             `;
             rawNum ++ ;
@@ -632,6 +632,17 @@
         document.getElementById("products-container").innerHTML = page;
         document.getElementById("search-container").innerHTML = "";
   })}}
+
+
+  async function returnBook(loanId){
+    try {
+      var response = await axios.delete(`http://127.0.0.1:8000/library/loans/delete/${loanId}`);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching loans:", error);
+    }
+    allLoansTable()
+  }
 
 
   checkUserStatus(user);
