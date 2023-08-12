@@ -50,7 +50,7 @@
         <ul class="nav navbar-nav">
           <li ><a onclick="booksPage()">Books</a></li>
           <li ><a onclick="customersPage()">Customers</a></li>
-          <li ><a >Loans</a></li>
+          <li ><a onclick="allLoansTable()">Loans</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a onclick="logoutUser()"><span class="glyphicon glyphicon-user"></span> Logout</a></li>
@@ -112,7 +112,9 @@
           <td>${book.status}</td>`;
       if (book.status == "Available") {
         page += `<td><button id="loanBtn_${book.id}" type="button"  onclick="loanBook(${book.id},${user_id})" class="btn btn-danger">Loan</button></td>`
-      };
+      } else {
+        page += `<td><button id="viewLoanBtn_${book.id}" type="button"  onclick="loanByBookTable(${book.id})" class="btn btn-danger">View Loan</button></td>`
+      }
       page += `</tr>`;
       rawNum++;
     });
@@ -149,7 +151,7 @@
                     <td>${customer.city}</td>
                     <td>${customer.age}</td>
                     <td>${customer.email}</td>
-                    <td><button id="loansBtn_${customer.id}" type="button"  onclick="" class="btn btn-danger">View Loans</button></td>
+                    <td><button id="loansBtn_${customer.id}" type="button"  onclick="loanByCustomerTable(${customer.id})" class="btn btn-danger">View Loans</button></td>
                   </tr>
             `;
             rawNum ++ ;
@@ -424,7 +426,9 @@
           <td>${book.status}</td>`;
       if (book.status == "Available") {
         page += `<td><button id="loanBtn_${book.id}" type="button"  onclick="loanBook(${book.id},${user.userId})" class="btn btn-danger">Loan</button></td>`
-      };
+      } else {
+        page += `<td><button id="viewLoanBtn_${book.id}" type="button"  onclick="loanByBookTable(${book.id})" class="btn btn-danger">View Loan</button></td>`
+      }
       page += `</tr>`;
       rawNum++;
     });
@@ -452,7 +456,7 @@
   function createCustomersSearchBar(){
     var page = `<div><form id="searchForm" onsubmit="searchCustomer(event)">
                   <div class="form-group">
-                    <input type="text" id="searchInput" placeholder="Search by book name">
+                    <input type="text" id="searchInput" placeholder="Search by customer name">
                     <input type="submit"id="searchButton" value=Search>
                   </div>
                 </form></div>`
@@ -490,7 +494,7 @@
                     <td>${customer.city}</td>
                     <td>${customer.age}</td>
                     <td>${customer.email}</td>
-                    <td><button id="loansBtn_${customer.id}" type="button"  onclick="" class="btn btn-danger">View Loans</button></td>
+                    <td><button id="loansBtn_${customer.id}" type="button"  onclick="loanByCustomerTable(${customer.id})" class="btn btn-danger">View Loans</button></td>
                   </tr>
             `;
       rawNum++;
@@ -514,6 +518,120 @@
     createCustomersSearchBar();
 
   }}
+
+
+  async function getAllLoans() {
+    try {
+      var response = await axios.get("http://127.0.0.1:8000/library/loans");
+      console.log(response.data);
+      var loansData = JSON.parse(response.data);
+      return loansData
+    } catch (error) {
+      console.error("Error fetching loans:", error);
+      return []; // Return an empty array or handle the error accordingly.
+    }
+  }
+
+
+  async function getLoansByCustomer(customer_id) {
+    try {
+      var response = await axios.get(`http://127.0.0.1:8000/library/loans/${customer_id}`);
+      console.log(response.data);
+      var loansData = JSON.parse(response.data);
+      return loansData
+    } catch (error) {
+      console.error("Error fetching loans:", error);
+      return []; // Return an empty array or handle the error accordingly.
+    }
+  }
+
+
+  async function getLoansByBook(book_id) {
+    try {
+      var response = await axios.get(`http://127.0.0.1:8000/library/loans/book/${book_id}`);
+      console.log(response.data);
+      var loansData = JSON.parse(response.data);
+      return loansData
+    } catch (error) {
+      console.error("Error fetching loans:", error);
+      return []; // Return an empty array or handle the error accordingly.
+    }
+  }
+
+
+  function allLoansTable(){
+    if (checkUserStatus(user)){
+    getAllLoans().then((loansData) => {
+        var rawNum = 1
+        var page = buildTable(["#", "Book Name", "Customer Name", "Loan Date", "Return Date", ""]);
+        loansData.forEach((loan) => {
+          page += `
+                  <tr>
+                    <th scope="row">${rawNum}</th>
+                    <td>${loan.book}</td>
+                    <td>${loan.customer}</td>
+                    <td>${loan.loan_date}</td>
+                    <td>${loan.return_date}</td>
+                    <td><button id="returnBookBtn_${loan.id}" type="button"  onclick="" class="btn btn-danger">Return Book</button></td>
+                  </tr>
+            `;
+            rawNum ++ ;
+        });
+        page += `  </tbody>
+                </table>`
+        document.getElementById("products-container").innerHTML = page;
+        document.getElementById("search-container").innerHTML = "";
+  })}}
+
+
+  function loanByCustomerTable(customerId){
+    if (checkUserStatus(user)){
+    getLoansByCustomer(customerId).then((loansData) => {
+        var rawNum = 1
+        var page = buildTable(["#", "Book Name", "Customer Name", "Loan Date", "Return Date", ""]);
+        loansData.forEach((loan) => {
+          page += `
+                  <tr>
+                    <th scope="row">${rawNum}</th>
+                    <td>${loan.book}</td>
+                    <td>${loan.customer}</td>
+                    <td>${loan.loan_date}</td>
+                    <td>${loan.return_date}</td>
+                    <td><button id="returnBookBtn_${loan.id}" type="button"  onclick="" class="btn btn-danger">Return Book</button></td>
+                  </tr>
+            `;
+            rawNum ++ ;
+        });
+        page += `  </tbody>
+                </table>`
+        document.getElementById("products-container").innerHTML = page;
+        document.getElementById("search-container").innerHTML = "";
+  })}}
+
+
+  function loanByBookTable(bookId){
+    if (checkUserStatus(user)){
+    getLoansByBook(bookId).then((loansData) => {
+        var rawNum = 1
+        var page = buildTable(["#", "Book Name", "Customer Name", "Loan Date", "Return Date", ""]);
+        loansData.forEach((loan) => {
+          page += `
+                  <tr>
+                    <th scope="row">${rawNum}</th>
+                    <td>${loan.book}</td>
+                    <td>${loan.customer}</td>
+                    <td>${loan.loan_date}</td>
+                    <td>${loan.return_date}</td>
+                    <td><button id="returnBookBtn_${loan.id}" type="button"  onclick="" class="btn btn-danger">Return Book</button></td>
+                  </tr>
+            `;
+            rawNum ++ ;
+        });
+        page += `  </tbody>
+                </table>`
+        document.getElementById("products-container").innerHTML = page;
+        document.getElementById("search-container").innerHTML = "";
+  })}}
 
 
   checkUserStatus(user);
