@@ -635,14 +635,20 @@
 
 
   async function returnBook(loanId){
+    const csrftoken = await getCSRFToken();
+    if(csrftoken){
     try {
-      var response = await axios.delete(`http://127.0.0.1:8000/library/loans/delete/${loanId}`);
+      var response = await axios.delete(`http://127.0.0.1:8000/library/loans/delete/${loanId}`,{
+          headers: {
+            'X-CSRFToken': csrftoken
+          }
+        });
       console.log(response.data);
     } catch (error) {
       console.error("Error fetching loans:", error);
     }
     allLoansTable()
-  }
+  }}
 
 
   checkUserStatus(user);
