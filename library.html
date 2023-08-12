@@ -202,6 +202,7 @@
           </div>`;
 
     document.getElementById("products-container").innerHTML = page;
+    document.getElementById("search-container").innerHTML = "";
   }
 
   // Create a customer posting the sign in form
@@ -252,6 +253,7 @@
                 </form></div>
                 <div><button id="signinbtn" type="button"  onclick="createUserSignInForm()" class="btn btn-danger">Sign In</div></div>`;
     document.getElementById("products-container").innerHTML = page;
+    document.getElementById("search-container").innerHTML = "";
   }
   
   // login the user
@@ -580,9 +582,13 @@
                     <td>${loan.customer}</td>
                     <td>${loan.loan_date}</td>
                     <td>${loan.return_date}</td>
-                    <td><button id="returnBookBtn_${loan.id}" type="button"  onclick="returnBook(${loan.id})" class="btn btn-danger">Return Book</button></td>
-                  </tr>
             `;
+          if (user.userId == loan.customer_id){
+            page += `<td><button id="returnBookBtn_${loan.id}" type="button"  onclick="returnBook(${loan.id})" class="btn btn-danger">Return Book</button></td>
+                  </tr>
+            `} else {
+              page += `</tr>`
+            }
             rawNum ++ ;
         });
         page += `  </tbody>
@@ -605,9 +611,13 @@
                     <td>${loan.customer}</td>
                     <td>${loan.loan_date}</td>
                     <td>${loan.return_date}</td>
-                    <td><button id="returnBookBtn_${loan.id}" type="button"  onclick="returnBook(${loan.id})" class="btn btn-danger">Return Book</button></td>
-                  </tr>
             `;
+          if (user.userId == loan.customer_id){
+            page += `<td><button id="returnBookBtn_${loan.id}" type="button"  onclick="returnBook(${loan.id})" class="btn btn-danger">Return Book</button></td>
+                  </tr>
+            `} else {
+              page += `</tr>`
+            }
             rawNum ++ ;
         });
         page += `  </tbody>
@@ -630,9 +640,13 @@
                     <td>${loan.customer}</td>
                     <td>${loan.loan_date}</td>
                     <td>${loan.return_date}</td>
-                    <td><button id="returnBookBtn_${loan.id}" type="button"  onclick="returnBook(${loan.id})" class="btn btn-danger">Return Book</button></td>
-                  </tr>
             `;
+          if (user.userId == loan.customer_id){
+            page += `<td><button id="returnBookBtn_${loan.id}" type="button"  onclick="returnBook(${loan.id})" class="btn btn-danger">Return Book</button></td>
+                  </tr>
+            `} else {
+              page += `</tr>`
+            }
             rawNum ++ ;
         });
         page += `  </tbody>
