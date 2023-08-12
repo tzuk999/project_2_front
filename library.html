@@ -3,39 +3,46 @@
 <head>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <style>
-      .search-container {
-        text-align: left;
-        margin-left: 20px;
-      }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <style>
+    .form-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  }
 
-      #searchInput {
-        padding: 5px;
-        width: 300px;
-      }
+    
+  .search-container {
+    text-align: left;
+    margin-left: 20px;
+  }
 
-      #searchButton {
-        padding: 5px 10px;
-      }
-       .navbar {
-      margin-bottom: 50px;
-      border-radius: 0;
-       }
-    </style>
+  #searchInput {
+    padding: 5px;
+    width: 300px;
+  }
+
+  #searchButton {
+    padding: 5px 10px;
+  }
+  .navbar {
+  margin-bottom: 50px;
+  border-radius: 0;
+    }
+  </style>
 </head>
 <body>
-  <div class="jumbotron">
-    <div class="container text-center">
-      <h2>Online Library</h2>      
-    </div>
-  </div>
-
   <nav class="navbar navbar-inverse">
     <div class="container-fluid">
       <div class="navbar-header">
@@ -229,7 +236,8 @@
 
   //create login form 
   function createLoginForm(){
-    var page = `<div><form id="loginForm" onsubmit="loginUser(event)">
+    var page = `<div class="form-container">
+                <div><form id="loginForm" onsubmit="loginUser(event)">
                   <div class="form-group">
                     <label for="username">Username:</label>
                     <input type="text" id="username" required class="form-control">
@@ -242,7 +250,7 @@
                     <input type="submit" value="Login" class="btn btn-primary">
                   </div>
                 </form></div>
-                <div><button id="signinbtn" type="button"  onclick="createUserSignInForm()" class="btn btn-danger">Sign In</div>`;
+                <div><button id="signinbtn" type="button"  onclick="createUserSignInForm()" class="btn btn-danger">Sign In</div></div>`;
     document.getElementById("products-container").innerHTML = page;
   }
   
@@ -347,7 +355,7 @@
             'X-CSRFToken': csrftoken
           }
         })
-      (response => {
+      .then(response => {
         // Handle the response data if needed
         console.log(response.data);
       })
