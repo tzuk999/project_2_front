@@ -58,6 +58,7 @@
           <li ><a onclick="booksPage()">Books</a></li>
           <li ><a onclick="customersPage()">Customers</a></li>
           <li ><a onclick="allLoansTable()">Loans</a></li>
+          <li ><a onclick="lateLoansTable()">Late Loans</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a onclick="logoutUser()"><span class="glyphicon glyphicon-user"></span> Logout</a></li>
@@ -569,6 +570,19 @@
   }
 
 
+  async function getLateLoans() {
+    try {
+      var response = await axios.get(`http://127.0.0.1:8000/library/late_loans`);
+      console.log(response.data);
+      var loansData = JSON.parse(response.data);
+      return loansData
+    } catch (error) {
+      console.error("Error fetching loans:", error);
+      return []; // Return an empty array or handle the error accordingly.
+    }
+  }
+
+
   function allLoansTable(){
     if (checkUserStatus(user)){
     getAllLoans().then((loansData) => {
@@ -630,6 +644,35 @@
   function loanByBookTable(bookId){
     if (checkUserStatus(user)){
     getLoansByBook(bookId).then((loansData) => {
+        var rawNum = 1
+        var page = buildTable(["#", "Book Name", "Customer Name", "Loan Date", "Return Date", ""]);
+        loansData.forEach((loan) => {
+          page += `
+                  <tr>
+                    <th scope="row">${rawNum}</th>
+                    <td>${loan.book}</td>
+                    <td>${loan.customer}</td>
+                    <td>${loan.loan_date}</td>
+                    <td>${loan.return_date}</td>
+            `;
+          if (user.userId == loan.customer_id){
+            page += `<td><button id="returnBookBtn_${loan.id}" type="button"  onclick="returnBook(${loan.id})" class="btn btn-danger">Return Book</button></td>
+                  </tr>
+            `} else {
+              page += `</tr>`
+            }
+            rawNum ++ ;
+        });
+        page += `  </tbody>
+                </table>`
+        document.getElementById("products-container").innerHTML = page;
+        document.getElementById("search-container").innerHTML = "";
+  })}}
+
+
+  function lateLoansTable(){
+    if (checkUserStatus(user)){
+    getLateLoans().then((loansData) => {
         var rawNum = 1
         var page = buildTable(["#", "Book Name", "Customer Name", "Loan Date", "Return Date", ""]);
         loansData.forEach((loan) => {
