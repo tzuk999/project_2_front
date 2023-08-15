@@ -92,7 +92,7 @@
   // Gets all books
   async function getAllBooks() {
     try {
-      var response = await axios.get("http://127.0.0.1:8000/library/books");
+      var response = await axios.get("https://tzuks-library.onrender.com/library/books");
       console.log(response.data);
       var booksData = JSON.parse(response.data);
       return booksData
@@ -135,7 +135,7 @@
   // create the customers table
   async function getAllCustomers() {
     try {
-      var response = await axios.get("http://127.0.0.1:8000/library/customers");
+      var response = await axios.get("https://tzuks-library.onrender.com/library/customers");
       console.log(response.data);
       var customersData = JSON.parse(response.data);
       return customersData
@@ -224,7 +224,7 @@
     };
 
     // Send the customer data as JSON using a POST request with Axios
-    axios.post("http://127.0.0.1:8000/library/create_customer", customerData)
+    axios.post("https://tzuks-library.onrender.com/library/create_customer", customerData)
       .then(response => {
         // Handle the response data if needed
         console.log(response.data);
@@ -274,7 +274,7 @@
     if (csrftoken) {
       // Include the CSRF token in the headers of the login request
       try {
-        const response = await axios.post("http://127.0.0.1:8000/library/login", loginData, {
+        const response = await axios.post("https://tzuks-library.onrender.com/library/login", loginData, {
           headers: {
             'X-CSRFToken': csrftoken
           }
@@ -298,7 +298,7 @@
 
   async function getAllLoans() {
     try {
-      var response = await axios.get("http://127.0.0.1:8000/library/loans");
+      var response = await axios.get("https://tzuks-library.onrender.com/library/loans");
       console.log(response.data);
       var loansData = JSON.parse(response.data);
       return loansData
@@ -313,7 +313,7 @@
   //get CSRF token
   async function getCSRFToken() {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/library/get_csrf_token");
+      const response = await axios.get("https://tzuks-library.onrender.com/library/get_csrf_token");
       return response.data.csrfToken;
     } catch (error) {
       console.error("Error fetching CSRF token:", error);
@@ -353,7 +353,7 @@
       customer_id : customer_id
     }
     const csrftoken = await getCSRFToken();
-    const response = await axios.post("http://127.0.0.1:8000/library/create_loan", loanData, {
+    const response = await axios.post("https://tzuks-library.onrender.com/library/create_loan", loanData, {
           headers: {
             'X-CSRFToken': csrftoken
           }
@@ -376,7 +376,7 @@
 
     if (csrftoken) {
       // Include the CSRF token in the headers of the login request
-        const response = await axios.post("http://127.0.0.1:8000/library/logout",{
+        const response = await axios.post("https://tzuks-library.onrender.com/library/logout",{
           headers: {
             'X-CSRFToken': csrftoken
           }
@@ -406,7 +406,7 @@
 
   async function getBooksBySearch(searchInput) {
     try {
-      var response = await axios.get(`http://127.0.0.1:8000/library/books/${searchInput}`);
+      var response = await axios.get(`https://tzuks-library.onrender.com/library/books/${searchInput}`);
       console.log(response.data);
       var booksData = JSON.parse(response.data);
       return booksData
@@ -477,7 +477,7 @@
 
   async function getCustomersBySearch(searchInput) {
     try {
-      var response = await axios.get(`http://127.0.0.1:8000/library/customers/${searchInput}`);
+      var response = await axios.get(`https://tzuks-library.onrender.com/library/customers/${searchInput}`);
       console.log(response.data);
       var customersData = JSON.parse(response.data);
       return customersData
@@ -533,7 +533,7 @@
 
   async function getAllLoans() {
     try {
-      var response = await axios.get("http://127.0.0.1:8000/library/loans");
+      var response = await axios.get("https://tzuks-library.onrender.com/library/loans");
       console.log(response.data);
       var loansData = JSON.parse(response.data);
       return loansData
@@ -546,7 +546,7 @@
 
   async function getLoansByCustomer(customer_id) {
     try {
-      var response = await axios.get(`http://127.0.0.1:8000/library/loans/${customer_id}`);
+      var response = await axios.get(`https://tzuks-library.onrender.com/library/loans/${customer_id}`);
       console.log(response.data);
       var loansData = JSON.parse(response.data);
       return loansData
@@ -559,7 +559,7 @@
 
   async function getLoansByBook(book_id) {
     try {
-      var response = await axios.get(`http://127.0.0.1:8000/library/loans/book/${book_id}`);
+      var response = await axios.get(`https://tzuks-library.onrender.com/library/loans/book/${book_id}`);
       console.log(response.data);
       var loansData = JSON.parse(response.data);
       return loansData
@@ -572,7 +572,7 @@
 
   async function getLateLoans() {
     try {
-      var response = await axios.get(`http://127.0.0.1:8000/library/late_loans`);
+      var response = await axios.get(`https://tzuks-library.onrender.com/library/late_loans`);
       console.log(response.data);
       var loansData = JSON.parse(response.data);
       return loansData
